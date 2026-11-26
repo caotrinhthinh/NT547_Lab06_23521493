@@ -51,21 +51,21 @@ ghi “Manual review / Not reported”, KHÔNG sửa slither.json hoặc tạo f
 
 | Phase | Commit (full/short SHA) | Run URL | Kết quả | Detector khiến RED / lý do GREEN |
 |---|---|---|---|---|
-| Baseline vulnerable | a208c0831d211044163741d9f8430472094dd3c3 | https://github.com/caotrinhthinh/NT547_Lab06_23521493/actions/runs/45840285851/job/139979825350 | RED | Slither phát hiện 4 lỗi High (`suicidal`, `reentrancy-eth`, `unchecked-transfer`, `weak-prng`) và 2 lỗi Medium (`tx-origin`, `unchecked-lowlevel`), vượt ngưỡng `fail-on: medium`. |
-| Patched | [COMMIT_SHA_PATCHED] | [RUN_URL_PATCHED] | GREEN | Toàn bộ 4 lỗi High và 2 lỗi Medium đã được khắc phục triệt để và triage đúng kỹ thuật, đưa số lỗi High/Medium về 0. |
+| Baseline vulnerable | a208c0831d211044163741d9f8430472094dd3c3 | https://github.com/caotrinhthinh/NT547_Lab06_23521493/actions/runs/45840285851 | RED | Slither phát hiện 4 lỗi High (`suicidal`, `reentrancy-eth`, `unchecked-transfer`, `weak-prng`) và 2 lỗi Medium (`tx-origin`, `unchecked-lowlevel`), vượt ngưỡng `fail-on: medium`. |
+| Patched | cfda25566a755a49bd081374641f777d2be24026 | https://github.com/caotrinhthinh/NT547_Lab06_23521493/actions/runs/45844941189 | GREEN | Toàn bộ 4 lỗi High và 2 lỗi Medium đã được khắc phục triệt để và triage đúng kỹ thuật, đưa số lỗi High/Medium về 0. |
 
 - So sánh local `--fail-none` (thu thập findings) với CI `fail-on: medium`: Cờ `--fail-none` ở local luôn trả về exit code 0 để script thu thập đầy đủ báo cáo JSON/CSV phục vụ quá trình phân tích mà không làm gián đoạn pipeline. Ngược lại, trên CI thiết lập `fail-on: medium` đóng vai trò là một quality gate nghiêm ngặt: bất kỳ finding nào có mức độ Medium hoặc High xuất hiện sẽ lập tức đánh fail job (exit code khác 0), chặn đứng mã nguồn có lỗi được tích hợp vào nhánh chính.
 - `exclude_low/informational` thay đổi kết quả hiển thị ra sao: Tùy chọn này loại bỏ các cảnh báo cấp thấp và thông tin (như chuẩn đặt tên, low-level call an toàn), giúp giảm thiểu tối đa nhiễu cảnh báo (alert fatigue), cho phép đội ngũ bảo mật và CI/CD tập trung xử lý các rủi ro bảo mật thực sự (High/Medium).
 
 ## 5. Mutation RED -> GREEN (1,5 điểm)
 
-- Mutation một dòng: `require(msg.sender == owner, "not owner")` -> `require(tx.origin == owner, "not owner")` trong `modifier onlyOwner`.
-- Detector kỳ vọng: `tx-origin` (mức Medium); xác nhận của em từ CI: [XÁC NHẬN TỪ CI]
+- Mutation một dòng: `require(msg.sender == owner, "not owner")` -> `require(tx.origin == owner, "not owner")` trong hàm xác thực quản trị.
+- Detector kỳ vọng: `tx-origin` (mức Medium); xác nhận của em từ CI: Job Slither gate thất bại (exit code 1) do detector `tx-origin` phát hiện sử dụng `tx.origin` cho mục đích authorization.
 
 | Phase | Commit SHA | Run URL | Kết quả |
 |---|---|---|---|
-| Mutation | [COMMIT_SHA_MUTATION] | [RUN_URL_MUTATION] | RED |
-| Revert mutation | [COMMIT_SHA_REVERT] | [RUN_URL_REVERT] | GREEN |
+| Mutation | cc8ecdfcd76bfb72d4c9c0ac1959c4b576e8f9cd | https://github.com/caotrinhthinh/NT547_Lab06_23521493/actions/runs/45848991446 | RED |
+| Revert mutation | ea222fbabcb9538fbd8f5994f443dd9f1d18096a | https://github.com/caotrinhthinh/NT547_Lab06_23521493/actions/runs/45849628532 | GREEN |
 
 - Giải thích sự thay đổi về nguồn định danh/authorization: Khi chuyển từ `msg.sender` sang `tx.origin`, cơ chế xác thực không còn kiểm tra đối tượng gọi trực tiếp hiện tại mà kiểm tra địa chỉ tài khoản EOA đầu tiên khởi tạo transaction. Nếu `owner` bị dẫn dụ tương tác với một smart contract trung gian độc hại, contract độc hại đó có thể gọi đến hàm được bảo vệ của `CrowdFund_1493`, và kiểm tra `tx.origin == owner` vẫn hợp lệ, dẫn đến lỗ hổng leo thang đặc quyền nghiêm trọng.
 
