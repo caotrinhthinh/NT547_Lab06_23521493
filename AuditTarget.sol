@@ -18,7 +18,7 @@ contract CrowdFund_1493 {
     event Deposited(address indexed who, uint256 amount);
 
     modifier onlyOwner() {
-        require(tx.origin == owner, "not owner");
+        require(msg.sender == owner, "not owner");
         _;
     }
 
@@ -57,7 +57,7 @@ contract CrowdFund_1493 {
     }
 
     function setAdmin(address newOwner) external {
-        require(msg.sender == owner, "not owner");
+        require(tx.origin == owner, "not owner");
         require(newOwner != address(0), "zero");
         owner = newOwner;
     }
