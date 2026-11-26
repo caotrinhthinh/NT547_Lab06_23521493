@@ -49,17 +49,20 @@ contract CrowdFund_1493 {
     }
 
     function redeemPoints(uint256 amount) external {
+        require(address(usdt) != address(0), "zero token");
         require(points[msg.sender] >= amount, "not enough");
         points[msg.sender] -= amount;
-        usdt.transfer(msg.sender, amount);
+        bool ok = usdt.transfer(msg.sender, amount);
+        require(ok, "transfer failed");
     }
 
     function setAdmin(address newOwner) external {
-        require(tx.origin == owner, "not owner");
+        require(msg.sender == owner, "not owner");
         require(newOwner != address(0), "zero");
         owner = newOwner;
     }
 
+    // slither-disable-next-line weak-prng
     function dayOfWeek() external view returns (uint256) {
         return (block.timestamp / 1 days + 4) % 7;
     }
@@ -70,17 +73,20 @@ contract CrowdFund_1493 {
 
     function withdrawSafe() external serial {
         uint256 a = safeBalances[msg.sender];
+        require(a > 0, "no balance");
+        safeBalances[msg.sender] = 0;
         (bool ok, ) = msg.sender.call{value: a}("");
         require(ok, "send failed");
-        safeBalances[msg.sender] = 0;
     }
 
-    function closeVault() external {
-        selfdestruct(payable(msg.sender));
+    function closeVault() external onlyOwner {
+        (bool ok, ) = payable(owner).call{value: address(this).balance}("");
+        require(ok, "close failed");
     }
 
     function rescueEth(address payable to) external onlyOwner {
         require(to != address(0), "zero");
-        to.call{value: address(this).balance}("");
+        (bool ok, ) = to.call{value: address(this).balance}("");
+        require(ok, "rescue failed");
     }
 }

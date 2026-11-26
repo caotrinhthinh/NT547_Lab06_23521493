@@ -1,0 +1,7 @@
+﻿index,check,impact,confidence,file,lines,description
+1,events-access,Low,Medium,AuditTarget.sol,"59,60,61,62,63; 62",CrowdFund_1493.setAdmin(address) (AuditTarget.sol#59-63) should emit an event for:  	- owner = newOwner (AuditTarget.sol#62)
+2,low-level-calls,Informational,High,AuditTarget.sol,"41,42,43,44; 42","Low level call in CrowdFund_1493.ownerWithdraw(uint256) (AuditTarget.sol#41-44): 	- (ok,None) = address(owner).call{value: amount}() (AuditTarget.sol#42)"
+3,low-level-calls,Informational,High,AuditTarget.sol,"87,88,89,90,91; 89","Low level call in CrowdFund_1493.rescueEth(address) (AuditTarget.sol#87-91): 	- (ok,None) = to.call{value: address(this).balance}() (AuditTarget.sol#89)"
+4,low-level-calls,Informational,High,AuditTarget.sol,"82,83,84,85; 83","Low level call in CrowdFund_1493.closeVault() (AuditTarget.sol#82-85): 	- (ok,None) = address(owner).call{value: address(this).balance}() (AuditTarget.sol#83)"
+5,low-level-calls,Informational,High,AuditTarget.sol,"74,75,76,77,78,79,80; 78","Low level call in CrowdFund_1493.withdrawSafe() (AuditTarget.sol#74-80): 	- (ok,None) = msg.sender.call{value: a}() (AuditTarget.sol#78)"
+6,naming-convention,Informational,High,AuditTarget.sol,"10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92",Contract CrowdFund_1493 (AuditTarget.sol#10-92) is not in CapWords
