@@ -18,7 +18,7 @@ contract CrowdFund_1493 {
     event Deposited(address indexed who, uint256 amount);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "not owner");
+        require(tx.origin == owner, "not owner");
         _;
     }
 
