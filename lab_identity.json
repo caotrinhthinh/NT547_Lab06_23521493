@@ -1,0 +1,9 @@
+{
+  "mssv": "23521493",
+  "session_code": "SC-2B43EC",
+  "contract": "CrowdFund_1493",
+  "baseline_sha256": "a72013782c5c1dfc8c8768b58325af9c52f4e07368fde2e9bf8ffb961e723599",
+  "generated_utc": "2026-11-26T14:10:41.942478+00:00",
+  "solidity": "0.8.24",
+  "note": "session_code sinh tai may SV, KHONG do GV cap"
+}
